@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@line/liff": "^2.19.1",
+    "@line/liff-inspector": "1.0.1",
+    "@line/liff-mock": "1.0.0",
     "vue": "^3.2.33"
   },
   "devDependencies": {

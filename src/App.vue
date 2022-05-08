@@ -44,9 +44,29 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import LiffInspectorPlugin from '@line/liff-inspector'
+import { LiffMockPlugin } from '@line/liff-mock'
 
 const liffObject = ref()
 const profileName = ref({})
+
+const setLiffPlugins = (liff: any) => {
+  liff.use(
+    new LiffInspectorPlugin({
+      origin: import.meta.env.VITE_LIFF_INSPECTOR_ORIGIN
+        ? import.meta.env.VITE_LIFF_INSPECTOR_ORIGIN
+        : 'ws://localhost:9222',
+    }),
+  )
+  liff.use(new LiffMockPlugin())
+}
+
+const setLiffMock = (liff: any) => {
+  liff.$mock.set((p) => ({
+    ...p,
+    getProfile: { displayName: '[mock] Test', userId: '1234' },
+  }))
+}
 
 onMounted(() => {
   import('@line/liff').then((liff: any) => {
@@ -54,6 +74,8 @@ onMounted(() => {
       .init({ liffId: import.meta.env.VITE_LIFF_ID })
       .then(() => {
         liffObject.value = liff
+        setLiffPlugins(liff)
+        setLiffMock(liff)
         if (liff.isLoggedIn()) {
           liff
             .getProfile()
